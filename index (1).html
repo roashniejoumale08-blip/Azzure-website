@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ember & Salt — Wood-Fired Kitchen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #1c1612; --ash: #4a3f35; --ember: #c0491a;
+      --gold: #d4963a; --cream: #faf6f0; --smoke: #f0ebe3; --white: #ffffff;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.6; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(28,22,18,0.92); backdrop-filter: blur(8px);
+    }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); letter-spacing: 0.02em; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-reserve { background: var(--ember); color: #fff; border: none; padding: 0.55rem 1.4rem; border-radius: 4px; font-size: 0.82rem; font-family: 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+    .nav-reserve:hover { background: #a83c14; }
+
+    .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 3rem 5rem; position: relative; background: var(--ink); overflow: hidden; }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(28,22,18,0.3) 0%, rgba(28,22,18,0.75) 70%, rgba(28,22,18,0.95) 100%),
+        radial-gradient(ellipse 80% 60% at 60% 30%, rgba(212,150,58,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 30% 60%, rgba(192,73,26,0.13) 0%, transparent 50%);
+    }
+    .hero-content { position: relative; max-width: 680px; }
+    .hero-eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; color: var(--white); line-height: 1.05; margin-bottom: 1.5rem; }
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .hero-sub { color: rgba(255,255,255,0.65); font-size: 1.05rem; max-width: 460px; margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .btn-primary { background: var(--ember); color: #fff; padding: 0.85rem 2.2rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.04em; transition: background 0.2s, transform 0.15s; display: inline-block; }
+    .btn-primary:hover { background: #a83c14; transform: translateY(-1px); }
+    .btn-ghost { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+    .btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
+    .hero-bar { display: flex; gap: 3rem; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .hero-stat-val { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--white); display: block; }
+    .hero-stat-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.45); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .about { display: grid; grid-template-columns: 1fr 1fr; }
+    .about-text { padding: 5rem 4rem 5rem 3rem; background: var(--cream); }
+    .about-text .section-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ember); margin-bottom: 1rem; }
+    .about-text h2 { font-family: 'Playfair Display', serif; font-size: 2.4rem; line-height: 1.2; margin-bottom: 1.5rem; }
+    .about-text p { color: var(--ash); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+    .about-visual { background: var(--ink); display: flex; align-items: center; justify-content: center; min-height: 420px; }
+    .about-visual-inner { text-align: center; padding: 2rem; }
+    .fire-icon { font-size: 4.5rem; display: block; margin-bottom: 1.2rem; }
+    .about-visual p { font-family: 'Playfair Display', serif; font-style: italic; color: rgba(255,255,255,0.5); font-size: 1.05rem; line-height: 1.8; max-width: 280px; }
+    .about-visual p strong { color: var(--gold); font-style: normal; }
+
+    .menu-section { background: var(--smoke); padding: 5rem 3rem; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-header .section-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ember); margin-bottom: 0.8rem; }
+    .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--ink); }
+    .menu-tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .tab-btn { padding: 0.5rem 1.4rem; border: 1px solid rgba(28,22,18,0.2); border-radius: 999px; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--ash); cursor: pointer; transition: all 0.2s; }
+    .tab-btn.active, .tab-btn:hover { background: var(--ember); border-color: var(--ember); color: #fff; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 960px; margin: 0 auto; }
+    .menu-item { background: var(--white); border-radius: 8px; padding: 1.6rem; border: 1px solid rgba(28,22,18,0.06); transition: box-shadow 0.2s; }
+    .menu-item:hover { box-shadow: 0 4px 20px rgba(28,22,18,0.08); }
+    .menu-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+    .menu-item h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--ink); }
+    .menu-price { font-size: 0.95rem; font-weight: 500; color: var(--ember); white-space: nowrap; margin-left: 0.5rem; }
+    .menu-item p { font-size: 0.85rem; color: var(--ash); line-height: 1.6; }
+    .menu-tag { display: inline-block; margin-top: 0.8rem; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); background: rgba(212,150,58,0.1); padding: 0.2rem 0.6rem; border-radius: 3px; }
+
+    .hours-section { background: var(--ink); padding: 5rem 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .hours-text h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--white); margin-bottom: 2rem; }
+    .hours-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.9rem; }
+    .hours-day { color: rgba(255,255,255,0.5); }
+    .hours-time { color: var(--white); }
+    .hours-time.closed { color: rgba(255,255,255,0.25); }
+    .location-block { color: rgba(255,255,255,0.65); }
+    .location-block h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; }
+    .location-block p { font-size: 0.9rem; line-height: 1.8; margin-bottom: 0.4rem; }
+    .location-block a { color: var(--ember); text-decoration: none; }
+    .location-block a:hover { text-decoration: underline; }
+
+    .cta-section { background: var(--ember); padding: 5rem 3rem; text-align: center; }
+    .cta-section h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--white); margin-bottom: 1rem; }
+    .cta-section p { color: rgba(255,255,255,0.75); font-size: 1rem; max-width: 440px; margin: 0 auto 2rem; line-height: 1.7; }
+    .btn-white { background: var(--white); color: var(--ember); padding: 0.9rem 2.5rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.04em; transition: background 0.2s, transform 0.15s; display: inline-block; }
+    .btn-white:hover { background: var(--cream); transform: translateY(-1px); }
+
+    footer { background: #110e0b; padding: 2.5rem 3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 0 1.5rem 4rem; }
+      .hero h1 { font-size: 2.8rem; }
+      .hero-bar { gap: 1.5rem; }
+      .about { grid-template-columns: 1fr; }
+      .about-text { padding: 3rem 1.5rem; }
+      .about-visual { min-height: 260px; }
+      .menu-section, .cta-section { padding: 3.5rem 1.5rem; }
+      .hours-section { grid-template-columns: 1fr; padding: 3.5rem 1.5rem; gap: 2.5rem; }
+      footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Ember &amp; Salt</div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#hours">Visit</a></li>
+  </ul>
+  <button class="nav-reserve" onclick="document.getElementById('reserve').scrollIntoView({behavior:'smooth'})">Reserve a Table</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Wood-Fired Kitchen · Est. 2019</p>
+    <h1>Food that<br/>tastes like <em>fire</em><br/>made it.</h1>
+    <p class="hero-sub">We cook everything over real wood — oak, cherry, hickory. No shortcuts. Just heat, smoke, and honest ingredients.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">View the Menu</a>
+      <a href="#hours" class="btn-ghost">Find us →</a>
+    </div>
+    <div class="hero-bar">
+      <div><span class="hero-stat-val">6 yrs</span><span class="hero-stat-lbl">Wood-fired</span></div>
+      <div><span class="hero-stat-val">Daily</span><span class="hero-stat-lbl">Fresh menu</span></div>
+      <div><span class="hero-stat-val">Local</span><span class="hero-stat-lbl">Sourced</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-text">
+    <p class="section-label">Our Story</p>
+    <h2>Cooked slow.<br/>Served simply.</h2>
+    <p>Ember &amp; Salt started as a small weekend pop-up in a parking lot. We had one wood-burning barrel, a folding table, and too much ambition. People kept coming back, so we built a proper kitchen — but kept the same barrel.</p>
+    <p>Everything on our menu changes with what's good at the market that week. We work with five local farms and one very reliable fisherman named Gerald.</p>
+  </div>
+  <div class="about-visual">
+    <div class="about-visual-inner">
+      <span class="fire-icon">🔥</span>
+      <p>"We don't use a <strong>timer</strong>. We use our eyes, our nose, and six years of practice."</p>
+    </div>
+  </div>
+</section>
+
+<section class="menu-section" id="menu">
+  <div class="section-header">
+    <p class="section-label">What we cook</p>
+    <h2>Tonight's Menu</h2>
+  </div>
+  <div class="menu-tabs">
+    <button class="tab-btn active">Small Plates</button>
+    <button class="tab-btn">Mains</button>
+    <button class="tab-btn">Sides</button>
+    <button class="tab-btn">Desserts</button>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Charred Leek Flatbread</h3><span class="menu-price">$14</span></div>
+      <p>Wood-fired dough, whipped ricotta, leeks blistered in the coals, chilli flake, lemon oil.</p>
+      <span class="menu-tag">Vegetarian</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Smoke-Roasted Bone Marrow</h3><span class="menu-price">$18</span></div>
+      <p>Whole marrow roasted over hickory, parsley salad, grilled sourdough, sea salt.</p>
+      <span class="menu-tag">Chef's pick</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Ember Beets</h3><span class="menu-price">$12</span></div>
+      <p>Whole beets buried in ash until tender, goat cheese, toasted walnuts, aged balsamic.</p>
+      <span class="menu-tag">Vegan</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Oysters, Two Ways</h3><span class="menu-price">$16</span></div>
+      <p>Three raw with mignonette, three grilled with herb butter. From Gerald's haul this morning.</p>
+      <span class="menu-tag">Seasonal</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Wood-Smoked Chicken Wings</h3><span class="menu-price">$16</span></div>
+      <p>Cherry-smoked low and slow, finished hot for the crisp. Fermented hot sauce, celery salt.</p>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-header"><h3>Charred Cauliflower</h3><span class="menu-price">$13</span></div>
+      <p>Whole head roasted directly on the coals, tahini, pomegranate, herb oil, pine nuts.</p>
+      <span class="menu-tag">Vegan</span>
+    </div>
+  </div>
+</section>
+
+<section class="hours-section" id="hours">
+  <div class="hours-text">
+    <h2>When we're open</h2>
+    <div class="hours-row"><span class="hours-day">Monday – Tuesday</span><span class="hours-time closed">Closed</span></div>
+    <div class="hours-row"><span class="hours-day">Wednesday – Thursday</span><span class="hours-time">5:00 pm – 10:00 pm</span></div>
+    <div class="hours-row"><span class="hours-day">Friday</span><span class="hours-time">5:00 pm – 11:00 pm</span></div>
+    <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">12:00 pm – 11:00 pm</span></div>
+    <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">12:00 pm – 9:00 pm</span></div>
+  </div>
+  <div class="location-block">
+    <h3>Find us</h3>
+    <p>42 Coalyard Lane<br/>East Village, New York, NY 10009</p>
+    <p style="margin-top:1rem;">Phone: <a href="tel:+12125550182">(212) 555-0182</a></p>
+    <p>Email: <a href="mailto:hello@emberandsalt.com">hello@emberandsalt.com</a></p>
+    <p style="margin-top:1.5rem; font-size:0.82rem; color:rgba(255,255,255,0.3);">Walk-ins welcome based on availability.<br/>Outdoor seating open April – October.</p>
+  </div>
+</section>
+
+<section class="cta-section" id="reserve">
+  <h2>Come eat with us.</h2>
+  <p>Tables fill fast on weekends. Book ahead and we'll have a spot by the fire waiting for you.</p>
+  <a href="mailto:hello@emberandsalt.com" class="btn-white">Reserve a Table</a>
+</section>
+
+<footer>
+  <div class="footer-logo">Ember &amp; Salt</div>
+  <span class="footer-copy">© 2025 Ember &amp; Salt. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
